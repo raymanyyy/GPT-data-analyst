@@ -23,9 +23,24 @@ with st.sidebar:
         submit_button = st.form_submit_button(label='Submit')
 
 if submit_button:
-    # create an engine to connect to the database
-    engine = create_engine(f'{db_products_dict[db_type]}://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}')
-    inspector = inspect(engine)
+    # check if the user has entered a request
+    if not user_request:
+        st.error('Please enter a request')
+        st.stop()
+
+    # check if the user has entered a database credentials
+    if not db_host or not db_user or not db_password or not db_name or not db_port:
+        st.error('Please enter a database credentials')
+        st.stop()
+
+    # try to create an engine to connect to the database
+    try:
+        engine = create_engine(f'{db_products_dict[db_type]}://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}')
+        inspector = inspect(engine)
+    except Exception as e:
+        st.error(f'Could not connect to the database. Error: {e}')
+        st.stop()
+
     table_names = inspector.get_table_names()
 
     # create an empty dictionary to store the column names for each table
