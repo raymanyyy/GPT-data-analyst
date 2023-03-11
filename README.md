@@ -1,6 +1,6 @@
 # GPT Data Analyst
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://raymanyyy-gtp-data-analyst-app-sql-vgwuqc.streamlit.app)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://raymanyyy-gpt-data-analyst-app-sql-zyh93t.streamlit.app)
  
 This app utilizes chatGPT API to introspect a DB and query it using user's prompt. It also utilizes Streamlit as simple UI.
 
