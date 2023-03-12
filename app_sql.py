@@ -4,6 +4,7 @@ import pandas as pd
 from sqlalchemy import create_engine, inspect, text
 
 openai.api_key = st.secrets['OPENAI_API_KEY']
+public_db_schema_link = st.secrets['public_db_schema_link']
 
 db_products_dict = {
     'public DB 👍': ['postgres', 'postgresql+psycopg2'],
@@ -29,6 +30,8 @@ with st.sidebar:
         db_user = st.secrets['pub_db_user']
         db_password = st.secrets['pub_db_password']
         db_name = st.secrets['pub_db_name']
+
+        st.write(f'[Schema of the public DB]({public_db_schema_link})')
 
     with st.form(key='my_form_to_submit'):
         user_request = st.text_area("Let chatGPT to do SQL for you")
@@ -66,7 +69,7 @@ if submit_button:
 
     # form an introspection doc
     doc = f"""
-        DATABASE SCHEMA DOCUMENTATION\n
+        AUTO-GENERATED DATABASE SCHEMA DOCUMENTATION\n
         Total Tables: {len(table_names)}
         """
     for table_name in table_names:

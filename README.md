@@ -4,7 +4,6 @@
  
 This app utilizes chatGPT API to introspect a DB and query it using user's prompt. It also utilizes Streamlit as simple UI.
 
-Note: Postgres container with sample data used for preview - [aa8y/postgres-dataset](https://hub.docker.com/r/aa8y/postgres-dataset/)
 ## Examples
 General queries
 ![Preview](github/preview1.png)
