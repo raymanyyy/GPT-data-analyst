@@ -6,20 +6,32 @@ from sqlalchemy import create_engine, inspect, text
 openai.api_key = st.secrets['OPENAI_API_KEY']
 
 db_products_dict = {
-    'postgres': 'postgresql+psycopg2',
+    'public DB 👍': ['postgres', 'postgresql+psycopg2'],
+    'custom Postgres': ['postgres', 'postgresql+psycopg2'],
+    # todo: add more DBs
+    # 'custom mySQL': ['mySQL', '...'],
 }
 
 with st.sidebar:
+    st.write('Pick your DB connection:')
+    db_type = st.selectbox('DB connection', db_products_dict.keys())
+
+    # if the user has selected a custom database, then show the input fields, else use the public DB
+    if db_type == 'custom Postgres':
+        db_host = st.text_input('host', 'localhost')
+        db_port = st.text_input('port', '5432')
+        db_user = st.text_input('user', 'postgres')
+        db_password = st.text_input('password', 'postgres', type='password')
+        db_name = st.text_input('database', 'postgres')
+    else:  # public DB
+        db_host = st.secrets['pub_db_host']
+        db_port = st.secrets['pub_db_port']
+        db_user = st.secrets['pub_db_user']
+        db_password = st.secrets['pub_db_password']
+        db_name = st.secrets['pub_db_name']
+
     with st.form(key='my_form_to_submit'):
         user_request = st.text_area("Let chatGPT to do SQL for you")
-
-        st.write('Enter your database credentials:')
-        db_type = st.selectbox('db type', db_products_dict.keys())
-        db_host = st.text_input('host', 'localhost')
-        db_user = st.text_input('user', 'postgres')
-        db_password = st.text_input('password', 'postgres')
-        db_name = st.text_input('database', 'world')
-        db_port = st.text_input('port', '5432')
         submit_button = st.form_submit_button(label='Submit')
 
 if submit_button:
@@ -35,7 +47,8 @@ if submit_button:
 
     # try to create an engine to connect to the database
     try:
-        engine = create_engine(f'{db_products_dict[db_type]}://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}')
+        engine = create_engine(
+            f'{db_products_dict[db_type][1]}://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}')
         inspector = inspect(engine)
     except Exception as e:
         st.error(f'Could not connect to the database. Error: {e}')
@@ -71,7 +84,8 @@ if submit_button:
     prompt = 'Given the database schema, write a SQL query that returns the following information: '
     prompt += f'{user_request}.\n'
     prompt += f'You only need to write SQL code, do not comment or explain code and do not add any additional info. \
-    I need code only. Always use table name in column reference to avoid ambiguity. SQL dialect is {db_type}.\
+    I need code only. Always use table name in column reference to avoid ambiguity. \
+    SQL dialect is {db_products_dict[db_type][0]}.\
     Only use columns and tables mentioned in the doc below. \n{doc}'
 
     response = openai.ChatCompletion.create(
